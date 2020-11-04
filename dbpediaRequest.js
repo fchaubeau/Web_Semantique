@@ -1,0 +1,1 @@
+var url = "dbpedia.org/sparql"
