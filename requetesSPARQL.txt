@@ -58,3 +58,22 @@ SELECT DISTINCT * WHERE {
 }
 
 
+
+
+// Infos album
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX att: <http://dbpedia.org/property/>
+PREFIX : <http://dbpedia.org/resource/>
+
+SELECT ?thumbnail ?album ?date ?infos ?artist ?label ?genre
+WHERE{
+    :The_Dark_Side_of_the_Moon dbo:abstract ?infos;
+                               att:thisAlbum ?album;
+                               dbo:artist ?artist;
+                               dbo:recordLabel ?label;
+                               dbo:genre ?genre;
+                               dbo:releaseDate ?date;
+                               dbo:thumbnail ?thumbnail.  
+    FILTER(lang(?infos)="en")
+}
+
