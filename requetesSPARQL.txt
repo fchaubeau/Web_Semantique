@@ -1,0 +1,60 @@
+//Artists
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX yago: <http://dbpedia.org/class/yago/>
+SELECT DISTINCT * WHERE {
+    {?artist a dbo:Group.} 
+    UNION
+    {?artist a dbo:Band.} 
+    UNION
+    {?artist a dbo:MusicalArtist.} 
+    UNION
+    {?artist a yago:yago:Artist109812338}
+}
+
+
+
+//Albums
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX yago: <http://dbpedia.org/class/yago/>
+SELECT DISTINCT * WHERE {
+    {?album a dbo:Album.} 
+    UNION
+    {?album a yago:Album106591815.} 
+}
+
+
+
+//Songs
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX yago: <http://dbpedia.org/class/yago/>
+SELECT DISTINCT * WHERE {
+    {?song a dbo:Song.} 
+    UNION
+    {?song a dbo:Single.} 
+    UNION
+    {?song a yago:Song107048000.}
+    UNION
+    {?song a yago:MusicalComposition107037465.}   
+}
+
+
+
+//Oeuvre musicale  en général
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX yago: <http://dbpedia.org/class/yago/>
+SELECT DISTINCT * WHERE {
+    {?music a dbo:MusicalWork. }
+    UNION
+    {?music a yago:Music107020895}
+}
+
+
+
+
+//Labels
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT * WHERE {
+    ?label a dbo:RecordLabel. 
+}
+
+
