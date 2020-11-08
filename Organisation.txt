@@ -1,0 +1,25 @@
+Paul : mettre tous les éléments pour que l'affichage se fasse correctement 
++ trouver les classes bootstrap pour que le tableau soit affiché de manière propre.
++ s'assurer que tout l'affichage se fait bien et est bien centré sur la page et tout (éventuellement besoin
+d'aller toucher le js étant donné qu'une partie du html sera mis en place de manière dynamique.
+
+Gary : Ecrire une fonction js qui prend en entrée un json issu d'une requête dbpedia et
+qui sort le code html d'un tableau adapté aux données que l'on a reçu (bon nombre de col, bon nom de col etc).
+
+Adrien : câbler la barre de recherche avec les fonctions js présentes dans le fichier .js + trouver un moyen de faire transiter des données 
+par l'URL, pour qu'on puisse avoir des liens qui ramènent vers la même page et font une requête vers dbpedia pour avoir les données
+
+François : créer une page de résultats intermédiaires qui affiche une série de lien en fonction des résultats possibles (par ex si 
+un titre et un album ont le même nom ou que 2 titres ont le même nom). 
+
+Aziz : trouver un moyen de différencier les données statiques (qu'on affichera juste par ex date de parution d'un album) et les 
+dynamiques (qui seront cliquables par ex les artistes ou les titres de chanson
+
+Cédric : écrire les requêtes pour afficher les infos sur un titre, un artiste etc. Dans ces infos, faire en sorte que pour tout artiste/groupe 
+on ait tous ses albums qui s'affichent et pour tout titre son album et artiste et pour tout album ses titres et son artiste. 
+
+
+
+Autre idées de tâches :
+- Mettre en place un autocomplete sur le champ de recherche qui propose toutes les valeurs de recherche possibles (tous les noms d'artiste,
+tous les noms d'album etc).

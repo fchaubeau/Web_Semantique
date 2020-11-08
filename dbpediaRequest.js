@@ -1,4 +1,4 @@
-
+// Inutile, sert juste à titre d'exemple
 function requestDbpedia(query){
 	let url = "http://dbpedia.org/sparql";
 	let queryURL = encodeURI( url + "?query=" + query + "&format=json" );
@@ -15,7 +15,9 @@ function requestDbpedia(query){
            	}
        });
 }
+// Fin inutile 
 
+// Retourne toutes les infos sur un artiste/un groupe
 function searchArtist(name){
 	let url = "http://dbpedia.org/sparql";
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
@@ -54,20 +56,5 @@ FILTER(lang(?infos)="en") \
        });
 }
 
+//Retourne toutes les infos sur back_in black
 searchArtist("Back_in_Black");
-
-//requestDbpedia("PREFIX dbo:<http://dbpedia.org/ontology/> SELECT DISTINCT * WHERE {{?song a dbo:Group.} UNION {?song a dbo:Band.} UNION {?song a dbo:MusicalArtist.} }LIMIT 50");
-//requestDbpedia("select distinct ?Concept where {[] a ?Concept} LIMIT 100");
-/*requestDbpedia('PREFIX dbo: <http://dbpedia.org/ontology/> \
-PREFIX att: <http://dbpedia.org/property/> \
-PREFIX : <http://dbpedia.org/resource/> \
-\
-SELECT ?album ?infos ?artist ?label \
-WHERE{ \
-    :The_Dark_Side_of_the_Moon dbo:abstract ?infos; \
-                               att:thisAlbum ?album; \
-                               dbo:artist ?artist; \
-                               dbo:recordLabel ?label. \
-    FILTER(lang(?infos)="en") \
-}');
-console.log("aaabb");*/
