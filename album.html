@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+    integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+
+  <!-- Style CSS -->
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <title>ZikoSearch</title>
+</head>
+
+<body class="container-fluid" onload="infoAlbum()">
+  <!-- Search Box -->
+  <div class="col-md-6 col-lg-6 col-11 mx-auto my-auto search-box">
+    <div class="input-group form-container">
+      <input type="text" name="search" class="form-control search-input"
+        placeholder="Rechercher un album, un artiste, un titre..." autofocus="autofocus" autocomplete="off">
+      <span class="input-group-btn">
+        <button class="btn btn-warning">
+          <img src="https://static.thenounproject.com/png/52666-200.png" class="img-fluid" width="40">
+        </button>
+      </span>
+    </div>
+  </div>
+  <!-- End of Search Box -->
+
+  <!-- Content -->
+  <div class="row">
+    <div class=col-3>
+      <div id=album-image>
+        <img src=https://img.icons8.com/ios/452/music.png class=img-fluid style="filter:invert(1);max-width: 300px;" />
+      </div>
+    </div>
+    <div class="col align-self-center">
+      <h3>ALBUM</h3>
+      <h1 id=album-name></h1>
+      <h2><span id=album-artist></span> - <span id=album-year></span></h2>
+    </div>
+  </div>
+  <div class=row>
+    <div class=col>
+      <h2>Songs</h2>
+      <table class="table table-dark">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
+        <tbody id=album-songs></tbody>
+      </table>
+    </div>
+    <div class=col>
+      <h2>Story</h2>
+      <div id=album-about></div>
+    </div>
+  </div>
+  <!-- End of Content -->
+  <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="dbpediaRequest.js"></script>
+
+  <!-- Optional JavaScript -->
+</body>
+
+</html>
