@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <title>ZikoSearch</title>
+</head>
+
+<body class="container-fluid">
+    <!-- Search Box -->
+    <div class="col-6 mx-auto">
+        <input type="text" id="search" class="form-control" placeholder="Rechercher un album, un artiste, un titre..."
+            autofocus="autofocus" autocomplete="off" oninput="searchQuery()">
+    </div>
+    <!-- End of Search Box -->
+
+    <!-- Content -->
+    <div class="row">
+        <div class=col>
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">Artist</th>
+                    </tr>
+                </thead>
+                <tbody id=search-artist></tbody>
+            </table>
+        </div>
+        <div class=col>
+            <table></table>
+        </div>
+        <div class=col>
+            <table></table>
+        </div>
+    </div>
+    <!-- End of Content -->
+    <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="dbpediaRequest.js"></script>
+
+    <!-- Optional JavaScript -->
+</body>
+
+</html>

@@ -1,4 +1,3 @@
-
 async function requestDbpedia(query) {
 	let url = "http://dbpedia.org/sparql";
 	let queryURL = encodeURI(url + "?query=" + query + "&format=json");
@@ -14,6 +13,38 @@ async function requestDbpedia(query) {
 	}
 }
 
+async function infoSong() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const name = urlParams.get('song');
+	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp:	<http://dbpedia.org/property/> \
+	PREFIX dbr:	<http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre  \
+	WHERE{ \
+	<' + name + '> dbo:abstract ?infos; \
+	dbp:thisSingle ?song; \
+	dbo:musicalArtist ?artist; \
+	dbo:recordLabel ?label; \
+	dbo:genre ?genre. \
+	?artist foaf:name ?artistName. \
+	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
+	OPTIONAL {<' + name + '> dbp:released ?year} \
+	OPTIONAL {<' + name + '> dbo:releaseDate ?year} \
+	FILTER(lang(?infos)="en") \
+	}';
+	results = await requestDbpedia(query);
+	console.log(results)
+	res = results[0];
+	console.log(res);
+	$('#song-name').html(res.song.value);
+	$('#song-about').html(res.infos.value);
+	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
+	$('#song-year').html(res.year.value);
+	if (typeof res.thumbnail !== 'undefined')
+		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
+}
+
 async function infoAlbum() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('album');
@@ -21,31 +52,37 @@ async function infoAlbum() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	\
-	SELECT ?thumbnail ?album ?date ?year ?infos ?artist ?artistName ?label ?genre \
+	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbp:relyear ?year; \
 	dbp:thisAlbum ?album; \
 	dbo:artist ?artist; \
-	dbo:recordLabel ?label; \
-	dbo:genre ?genre; \
-	dbo:releaseDate ?date. \
-	?artist foaf:name ?artistName.\
+	dbo:genre ?genre. \
+	?artist foaf:name ?artistName. \
+	?song dbo:album <' + name + '>; \
+	dbp:thisSingle ?songName. \
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
 	console.log(results)
+	var tableau = "";
 	for (var i in results) {
-		res = results[i];
-		console.log(res);
-		$('#album-name').html(res.album.value);
-		$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
-		$('#album-year').html(res.year.value);
-		if (typeof res.thumbnail !== 'undefined')
-			$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
+		tableau += '<tr> \
+		<th scope="row">' + (+i + 1) + '</th> \
+		<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
+	  </tr>'
 	}
+	$('#album-songs').html(tableau);
+	res = results[0];
+	console.log(res);
+	$('#album-name').html(res.album.value);
+	$('#album-about').html(res.infos.value);
+	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
+	$('#album-year').html(res.year.value);
+	if (typeof res.thumbnail !== 'undefined')
+		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
 
 async function infoArtist() {
@@ -78,14 +115,14 @@ async function infoArtist() {
 	var tableau = "";
 	console.log(results);
 	for (var i in results) {
-		tableau +=  '<tr> \
+		tableau += '<tr> \
 		<th scope="row">' + (+i + 1) + '</th> \
 		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
-		<td>' + results[i].dateAlbum.value.substr(0,4) + '</td> \
+		<td>' + results[i].dateAlbum.value.substr(0, 4) + '</td> \
 		<td>' + results[i].nbSong.value + '</td> \
 	  </tr>'
 	}
-	$('#album-songs').html(tableau);
+	$('#artist-albums').html(tableau);
 	res = results[0];
 	$('#artist-name').html(res.name.value);
 	$('#artist')
@@ -95,4 +132,28 @@ async function infoArtist() {
 	$('#artist-about').html(res.info.value);
 	if (typeof res.end !== 'undefined')
 		$('#artist-year-end').html(res.end.value);
+}
+
+async function searchQuery() {
+	value = $("#search").val(); 
+	console.log(value);	
+	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp: <http://dbpedia.org/property/> \
+	PREFIX dbr: <http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?artist ?artistName \
+	WHERE{ \
+	?artist foaf:name ?artistName. \
+	FILTER (regex(?artistName, "' + value + '", "i")) \
+	?album dbo:artist ?artist. \
+	} GROUP BY ?artist ?artistName LIMIT 5';
+	results = await requestDbpedia(query);
+	var tableau = "";
+	console.log(results);
+	for (var i in results) {
+		tableau += '<tr> \
+		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
+	  </tr>'
+	}
+	$('#search-artist').html(tableau);
 }
