@@ -34,9 +34,7 @@ async function infoSong() {
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
-	console.log(results)
 	res = results[0];
-	console.log(res);
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
@@ -66,7 +64,6 @@ async function infoAlbum() {
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
-	console.log(results)
 	var tableau = "";
 	for (var i in results) {
 		tableau += '<tr> \
@@ -76,7 +73,6 @@ async function infoAlbum() {
 	}
 	$('#album-songs').html(tableau);
 	res = results[0];
-	console.log(res);
 	$('#album-name').html(res.album.value);
 	$('#album-about').html(res.infos.value);
 	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
@@ -113,7 +109,6 @@ async function infoArtist() {
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
 	var tableau = "";
-	console.log(results);
 	for (var i in results) {
 		tableau += '<tr> \
 		<th scope="row">' + (+i + 1) + '</th> \
@@ -134,9 +129,7 @@ async function infoArtist() {
 		$('#artist-year-end').html(res.end.value);
 }
 
-async function searchQuery() {
-	value = $("#search").val(); 
-	console.log(value);	
+async function searchArtist(value) {
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
@@ -149,11 +142,64 @@ async function searchQuery() {
 	} GROUP BY ?artist ?artistName LIMIT 5';
 	results = await requestDbpedia(query);
 	var tableau = "";
-	console.log(results);
 	for (var i in results) {
 		tableau += '<tr> \
 		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
 	  </tr>'
 	}
 	$('#search-artist').html(tableau);
+}
+
+async function searchAlbum(value) {
+	query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp: <http://dbpedia.org/property/> \
+	PREFIX dbr: <http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?artist ?artistName ?album ?albumName \
+	WHERE{ \
+	?album  dbp:thisAlbum ?albumName. \
+	FILTER (regex(?albumName, "' + value + '", "i")) \
+	?album dbo:artist ?artist. \
+	?artist foaf:name ?artistName. \
+	} GROUP BY ?artist ?artistName ?album ?albumName LIMIT 5';
+	results = await requestDbpedia(query);
+	var tableau = "";
+	for (var i in results) {
+		tableau += '<tr> \
+		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
+		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
+	  </tr>'
+	}
+	$('#search-album').html(tableau);
+}
+
+async function searchSong(value) {
+	query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp: <http://dbpedia.org/property/> \
+	PREFIX dbr: <http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?song ?songName ?artist ?artistName ?album ?albumName \
+	WHERE{ \
+	?song  dbp:thisSingle ?songName. \
+	FILTER (regex(?songName, "' + value + '", "i")) \
+	OPTIONAL {?song dbo:musicalArtist ?artist} \
+	OPTIONAL {?artist foaf:name ?artistName} \
+	OPTIONAL {?song dbo:album ?album} \
+	OPTIONAL {?album dbp:thisAlbum ?albumName} \
+	} GROUP BY ?song ?songName LIMIT 5';
+	results = await requestDbpedia(query);
+	var tableau = "";
+	for (var i in results) {
+		tableau += '<tr> \
+		<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
+		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
+		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
+	  </tr>'
+	}
+	$('#search-song').html(tableau);
+}
+
+async function searchQuery() {
+	v = $("#search").val(); 
+	await Promise.all([searchArtist(v), searchArtist(v)], searchSong(v));
 }
