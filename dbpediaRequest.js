@@ -92,11 +92,12 @@ async function infoAlbum() {
 async function infoArtist() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('artist');
+	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong \
+	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong ?genre ?genreName \
 	WHERE{ \
 	<' + name + '> dbo:thumbnail ?thumbnail; \
 	dbo:abstract ?info; \
@@ -110,10 +111,12 @@ async function infoArtist() {
 	dbo:releaseDate ?dateAlbum. \
 	?x dbo:album ?album. \
 	OPTIONAL { <' + name + '> dbo:activeYearsEndYear  ?end} \
+	OPTIONAL { <' + name + '> dbo:genre ?genre. \
+	?genre foaf:name ?genreName.} \
 	FILTER(lang(?countryname)="en") \
 	FILTER(lang(?info)="en") \
 	} \
-	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name \
+	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name ?genre ?genreName \
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
 	var tableau = "";
@@ -133,6 +136,7 @@ async function infoArtist() {
 	$('#artist-country').html(res.countryname.value);
 	$('#artist-year-start').html(res.begin.value);
 	$('#artist-about').html(res.info.value);
+	$('#artist-genre').html(res.genreName.value);
 	if (typeof res.end !== 'undefined')
 		$('#artist-year-end').html(res.end.value);
 }
