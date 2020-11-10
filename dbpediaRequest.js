@@ -20,7 +20,7 @@ async function infoSong() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre  \
+	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre ?genreName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbp:thisSingle ?song; \
@@ -28,17 +28,20 @@ async function infoSong() {
 	dbo:recordLabel ?label; \
 	dbo:genre ?genre. \
 	?artist foaf:name ?artistName. \
+	?genre foaf:name ?genreName. \
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
 	OPTIONAL {<' + name + '> dbp:released ?year} \
 	OPTIONAL {<' + name + '> dbo:releaseDate ?year} \
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
+	console.log(results);
 	res = results[0];
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
 	$('#song-year').html(res.year.value);
+	$('#song-genre').html(res.genreName.value);
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
@@ -89,11 +92,12 @@ async function infoAlbum() {
 async function infoArtist() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('artist');
+	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong \
+	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong ?genre ?genreName \
 	WHERE{ \
 	<' + name + '> dbo:thumbnail ?thumbnail; \
 	dbo:abstract ?info; \
@@ -107,10 +111,12 @@ async function infoArtist() {
 	dbo:releaseDate ?dateAlbum. \
 	?x dbo:album ?album. \
 	OPTIONAL { <' + name + '> dbo:activeYearsEndYear  ?end} \
+	OPTIONAL { <' + name + '> dbo:genre ?genre. \
+	?genre foaf:name ?genreName.} \
 	FILTER(lang(?countryname)="en") \
 	FILTER(lang(?info)="en") \
 	} \
-	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name \
+	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name ?genre ?genreName \
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
 	var tableau = "";
@@ -134,6 +140,7 @@ async function infoArtist() {
 	$('#artist-country').html(res.countryname.value);
 	$('#artist-year-start').html(res.begin.value);
 	$('#artist-about').html(res.info.value);
+	$('#artist-genre').html(res.genreName.value);
 	if (typeof res.end !== 'undefined')
 		$('#artist-year-end').html(res.end.value);
 }
