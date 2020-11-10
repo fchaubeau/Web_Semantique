@@ -64,6 +64,7 @@ async function infoAlbum() {
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
+	console.log(results);
 	var tableau = "";
 	for (var i in results) {
 		tableau += '<tr> \
@@ -201,5 +202,5 @@ async function searchSong(value) {
 
 async function searchQuery() {
 	v = $("#search").val(); 
-	await Promise.all([searchArtist(v), searchArtist(v)], searchSong(v));
+	await Promise.all([searchArtist(v), searchAlbum(v), searchSong(v)]);
 }
