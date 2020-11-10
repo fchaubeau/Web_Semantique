@@ -183,12 +183,13 @@ async function searchSong(value) {
 	WHERE{ \
 	?song  dbp:thisSingle ?songName. \
 	FILTER (regex(?songName, "' + value + '", "i")) \
-	OPTIONAL {?song dbo:musicalArtist ?artist} \
-	OPTIONAL {?artist foaf:name ?artistName} \
-	OPTIONAL {?song dbo:album ?album} \
-	OPTIONAL {?album dbp:thisAlbum ?albumName} \
+	OPTIONAL {?song dbo:musicalArtist ?artist. \
+	?artist foaf:name ?artistName} \
+	OPTIONAL {?song dbo:album ?album. \
+	?album dbp:thisAlbum ?albumName} \
 	} GROUP BY ?song ?songName LIMIT 5';
 	results = await requestDbpedia(query);
+	console.log(results);
 	var tableau = "";
 	for (var i in results) {
 		tableau += '<tr> \
