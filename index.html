@@ -16,16 +16,20 @@
     <title>ZikoSearch</title>
 </head>
 
-<body class="container-fluid">
+<body class="container-fluid bg">
     <!-- Search Box -->
-    <div class="col-6 mx-auto">
-        <input type="text" id="search" class="form-control" placeholder="Rechercher un album, un artiste, un titre..."
+    
+    <div class="input-group mb-3 searchbar">
+  <input type="text" id="search" class="form-control" placeholder="Rechercher un album, un artiste, un titre..."
             autofocus="autofocus" autocomplete="off" oninput="searchQuery()">
-    </div>
+  <div class="input-group-append">
+    <button class="btn btn-secondary" type="button" id="button-addon2">Rechercher</button>
+  </div>
+</div>
     <!-- End of Search Box -->
 
     <!-- Content -->
-    <div class="row">
+    <div class="row result">
         <div class=col>
             <table class="table table-dark">
                 <thead>
