@@ -16,11 +16,13 @@
   <title>ZikoSearch</title>
 </head>
 
-<body class="container-fluid" onload="infoSong()">
+<body class="container-fluid bg" onload="infoSong()">
   <!-- Search Box -->
+ <a href="index.html" class="btn btn-light retour">RETOUR</a>
+
   <div class="col-md-6 col-lg-6 col-11 mx-auto my-auto search-box">
-    <div class="input-group form-container">
-      <input type="text" name="search" class="form-control search-input"
+    <div class="input-group form-container searchbar">
+      <input type="text" name="search" class="form-control search-input "
         placeholder="Rechercher un album, un artiste, un titre..." autofocus="autofocus" autocomplete="off">
       <span class="input-group-btn">
         <button class="btn btn-warning">
@@ -32,7 +34,7 @@
   <!-- End of Search Box -->
 
   <!-- Content -->
-  <div class="row">
+  <div class="row" style ="position:relative; top: 50px">
     <div class=col-3>
       <div id=song-image>
         <img src=https://img.icons8.com/ios/452/music.png class=img-fluid style="filter:invert(1);max-width: 300px;" />
@@ -44,10 +46,12 @@
       <h2><span id=song-artist></span> - <span id=song-year></span></h2>
     </div>
   </div>
-  <div class=row>
-      <h2>Story</h2>
-      <div id=song-about></div>
+    <div class="row" style ="position:relative; top: 50px">
+<div class=col style="background-color: antiquewhite;opacity: 0.5">
+      <h2 class="titre">Story</h2>
+      <div id=song-about class="story"></div>
   </div>
+        </div>
   <!-- End of Content -->
   <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script type="text/javascript" src="dbpediaRequest.js"></script>
