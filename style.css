@@ -7,6 +7,10 @@ h3 {
     font-size:15px;
 }
 
+.titre{
+    color: black;
+}
+
 .inverser {
     filter:invert(1);
 }
@@ -20,14 +24,26 @@ h3 {
 }
 
 .searchbar{
-   position: relative; 
+    position: relative; 
     margin-left: auto;
     margin-right: auto;
-   top: 40px; 
+    top: 40px; 
     width: 600px;
 }
 
 .result{
     position : relative;
     top : 80px;
+}
+
+.retour{
+    position: fixed;
+    left: 40px;
+    top : 50px;
+    z-index: 10;
+}
+
+.story{
+    color : black;
+    font-size: 15pxpx;
 }
