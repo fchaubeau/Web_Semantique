@@ -34,6 +34,7 @@ async function infoSong() {
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
+	console.log(results);
 	res = results[0];
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
