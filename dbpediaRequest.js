@@ -189,7 +189,6 @@ async function searchSong(value) {
 	?album dbp:thisAlbum ?albumName} \
 	} GROUP BY ?song ?songName LIMIT 5';
 	results = await requestDbpedia(query);
-	console.log(results);
 	var tableau = "";
 	for (var i in results) {
 		tableau += '<tr> \
