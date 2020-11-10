@@ -20,7 +20,7 @@ async function infoSong() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre  \
+	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre ?genreName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbp:thisSingle ?song; \
@@ -28,6 +28,7 @@ async function infoSong() {
 	dbo:recordLabel ?label; \
 	dbo:genre ?genre. \
 	?artist foaf:name ?artistName. \
+	?genre foaf:name ?genreName. \
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
 	OPTIONAL {<' + name + '> dbp:released ?year} \
 	OPTIONAL {<' + name + '> dbo:releaseDate ?year} \
@@ -40,6 +41,7 @@ async function infoSong() {
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
 	$('#song-year').html(res.year.value);
+	$('#song-genre').html(res.genreName.value);
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
