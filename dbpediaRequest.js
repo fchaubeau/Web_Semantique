@@ -51,10 +51,10 @@ async function infoAlbum() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName  \
+	SELECT DISTINCT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
-	dbp:relyear ?year; \
+	dbo:releaseDate ?year; \
 	dbp:thisAlbum ?album; \
 	dbo:artist ?artist; \
 	dbo:genre ?genre. \
@@ -67,18 +67,22 @@ async function infoAlbum() {
 	results = await requestDbpedia(query);
 	console.log(results);
 	var tableau = "";
+	var titles = [];
 	for (var i in results) {
-		tableau += '<tr> \
-		<th scope="row">' + (+i + 1) + '</th> \
-		<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
-	  </tr>'
+		if(!titles.includes(results[i].song.value)) {
+			tableau += '<tr> \
+			<th scope="row">' + (+i + 1) + '</th> \
+			<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
+	    	</tr>';
+	    	titles.push(results[i].song.value);
+		}
 	}
 	$('#album-songs').html(tableau);
 	res = results[0];
 	$('#album-name').html(res.album.value);
 	$('#album-about').html(res.infos.value);
 	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
-	$('#album-year').html(res.year.value);
+	$('#album-year').html(res.year.value.substring(0,4));
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
@@ -184,8 +188,10 @@ async function searchSong(value) {
 	WHERE{ \
 	?song  dbp:thisSingle ?songName. \
 	FILTER (regex(?songName, "' + value + '", "i")) \
-	OPTIONAL {?song dbo:musicalArtist ?artist. \
-	?artist foaf:name ?artistName} \
+	OPTIONAL { \
+				?song dbo:musicalArtist ?artist. \
+				?artist foaf:name ?artistName. \
+			} \
 	OPTIONAL {?song dbo:album ?album. \
 	?album dbp:thisAlbum ?albumName} \
 	} GROUP BY ?song ?songName LIMIT 5';
