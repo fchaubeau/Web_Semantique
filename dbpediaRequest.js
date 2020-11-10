@@ -57,9 +57,9 @@ async function infoAlbum() {
 	dbp:thisAlbum ?album; \
 	dbo:artist ?artist; \
 	dbo:genre ?genre. \
-	?artist foaf:name ?artistName. \
-	?song dbo:album <' + name + '>; \
-	dbp:thisSingle ?songName. \
+	OPTIONAL { ?artist foaf:name ?artistName. } \
+	OPTIONAL {  ?song dbo:album <' + name + '>; \
+				dbp:thisSingle ?songName. }\
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
 	FILTER(lang(?infos)="en") \
 	}';
@@ -114,13 +114,17 @@ async function infoArtist() {
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
 	var tableau = "";
+	var titles = [];
 	for (var i in results) {
-		tableau += '<tr> \
-		<th scope="row">' + (+i + 1) + '</th> \
-		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
-		<td>' + results[i].dateAlbum.value.substr(0, 4) + '</td> \
-		<td>' + results[i].nbSong.value + '</td> \
-	  </tr>'
+		if(!titles.includes(results[i].album.value)){
+			tableau += '<tr> \
+			<th scope="row">' + (+i + 1) + '</th> \
+			<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
+			<td>' + results[i].dateAlbum.value.substr(0, 4) + '</td> \
+			<td>' + results[i].nbSong.value + '</td> \
+		    </tr>';
+		    titles.push(results[i].album.value);
+		}
 	}
 	$('#artist-albums').html(tableau);
 	res = results[0];
