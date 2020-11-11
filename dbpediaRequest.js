@@ -99,51 +99,70 @@ async function infoArtist() {
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
 	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong ?genre ?genreName \
 	WHERE{ \
-	<' + name + '> dbo:thumbnail ?thumbnail; \
-	dbo:abstract ?info; \
-	foaf:name ?name; \
-	dbo:activeYearsStartYear ?begin; \
-	dbo:hometown ?town. \
+	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail.}. \
+	OPTIONAL {<' + name + '> dbo:abstract ?info. \
+	FILTER(lang(?info)="en") }. \
+	OPTIONAL {<' + name + '> foaf:name ?name.}. \
+	OPTIONAL {<' + name + '> dbo:activeYearsStartYear ?begin.}. \
+	OPTIONAL {<' + name + '> dbo:hometown ?town. \
 	?town dbo:country ?country. \
 	?country rdfs:label ?countryname. \
-	?album dbo:artist <' + name + '>; \
+	FILTER(lang(?countryname)="en")}. \
+	OPTIONAL {?album dbo:artist <' + name + '>; \
 	dbp:thisAlbum ?albumName; \
 	dbo:releaseDate ?dateAlbum. \
-	?x dbo:album ?album. \
-	OPTIONAL { <' + name + '> dbo:activeYearsEndYear  ?end} \
+	?x dbo:album ?album. }.\
+	OPTIONAL { <' + name + '> dbo:activeYearsEndYear  ?end}. \
 	OPTIONAL { <' + name + '> dbo:genre ?genre. \
 	?genre foaf:name ?genreName.} \
-	FILTER(lang(?countryname)="en") \
-	FILTER(lang(?info)="en") \
 	} \
 	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name ?genre ?genreName \
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
 	var tableau = "";
 	var titles = [];
+	var dateAlbum="";
+	var nbsong ="";
 	for (var i in results) {
-		if(!titles.includes(results[i].album.value)){
-			tableau += '<tr> \
-			<th scope="row">' + (+i + 1) + '</th> \
-			<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
-			<td>' + results[i].dateAlbum.value.substr(0, 4) + '</td> \
-			<td>' + results[i].nbSong.value + '</td> \
-		    </tr>';
-		    titles.push(results[i].album.value);
+		if( results[i].hasOwnProperty('dateAlbum'))
+		{
+			dateAlbum = results[i].dateAlbum.value.substr(0, 4);
+		}
+		if(results[i].hasOwnProperty('nbSong'))
+		{
+			nbsong = results[i].nbSong.value;
+		}
+		if(results[i].hasOwnProperty('album') && results[i].hasOwnProperty('albumName') ){
+			if(!titles.includes(results[i].album.value)){
+				tableau += '<tr> \
+				<th scope="row">' + (+i + 1) + '</th> \
+				<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
+				<td>' +  dateAlbum+ '</td> \
+				<td>' +  nbsong+ '</td> \
+				</tr>';
+				titles.push(results[i].album.value);
+			}
 		}
 	}
 	$('#artist-albums').html(tableau);
 	res = results[0];
-	$('#artist-name').html(res.name.value);
+	if( res.hasOwnProperty('name') )
+		$('#artist-name').html(res.name.value);
 	$('#artist')
-	$('#artist-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
-	$('#artist-country').html(res.countryname.value);
-	$('#artist-year-start').html(res.begin.value);
-	$('#artist-about').html(res.info.value);
-	$('#artist-genre').html(res.genreName.value);
-	if (typeof res.end !== 'undefined')
+	if( res.hasOwnProperty('thumbnail') )
+		$('#artist-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
+	if( res.hasOwnProperty('countryname') )
+		$('#artist-country').html(res.countryname.value);
+	if( res.hasOwnProperty('begin') )
+		$('#artist-year-start').html(res.begin.value);
+	if( res.hasOwnProperty('info') )
+		$('#artist-about').html(res.info.value);
+	if( res.hasOwnProperty('genreName') )
+		$('#artist-genre').html(res.genreName.value);
+	if( res.hasOwnProperty('end') )
 		$('#artist-year-end').html(res.end.value);
 }
+
 
 async function searchArtist(value) {
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
