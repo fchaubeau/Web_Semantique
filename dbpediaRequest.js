@@ -63,15 +63,15 @@ async function infoAlbum() {
 	OPTIONAL { ?artist foaf:name ?artistName. } \
 	OPTIONAL {  ?song dbo:album <' + name + '>; \
 				dbp:thisSingle ?songName. }\
-	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
-	FILTER(lang(?infos)="en") \
+	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail. }.\
+	FILTER(lang(?infos)="en"). \
 	}';
 	results = await requestDbpedia(query);
 	console.log(results);
 	var tableau = "";
 	var titles = [];
 	for (var i in results) {
-		if(!titles.includes(results[i].song.value)) {
+		if(results[i].song && !titles.includes(results[i].song.value)) {
 			tableau += '<tr> \
 			<th scope="row">' + (+i + 1) + '</th> \
 			<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
@@ -123,6 +123,7 @@ async function infoArtist() {
 	var titles = [];
 	var dateAlbum="";
 	var nbsong ="";
+	var index = 1;
 	for (var i in results) {
 		if( results[i].hasOwnProperty('dateAlbum'))
 		{
@@ -135,12 +136,13 @@ async function infoArtist() {
 		if(results[i].hasOwnProperty('album') && results[i].hasOwnProperty('albumName') ){
 			if(!titles.includes(results[i].album.value)){
 				tableau += '<tr> \
-				<th scope="row">' + (+i + 1) + '</th> \
+				<th scope="row">' + index + '</th> \
 				<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
 				<td>' +  dateAlbum+ '</td> \
 				<td>' +  nbsong+ '</td> \
 				</tr>';
 				titles.push(results[i].album.value);
+				index++;
 			}
 		}
 	}
