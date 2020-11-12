@@ -1,6 +1,7 @@
 async function requestDbpedia(query) {
 	let url = "http://dbpedia.org/sparql";
 	let queryURL = encodeURI(url + "?query=" + query + "&format=json");
+	console.log(query);
 	try {
 		result = await $.ajax({
 			dataType: "jsonp",
