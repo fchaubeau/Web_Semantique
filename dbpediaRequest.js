@@ -53,13 +53,14 @@ async function infoAlbum() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT DISTINCT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName  \
+	SELECT DISTINCT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName ?genreName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbo:releaseDate ?year; \
 	dbp:thisAlbum ?album; \
 	dbo:artist ?artist; \
 	dbo:genre ?genre. \
+	?genre foaf:name ?genreName. \
 	OPTIONAL { ?artist foaf:name ?artistName. } \
 	OPTIONAL {  ?song dbo:album <' + name + '>; \
 				dbp:thisSingle ?songName. }\
@@ -70,7 +71,17 @@ async function infoAlbum() {
 	console.log(results);
 	var tableau = "";
 	var titles = [];
+	var genres = [];
+	var htmlGenres = "";
 	for (var i in results) {
+		if(results[i].hasOwnProperty('genreName'))
+		{
+			if(!genres.includes(results[i].genreName.value)){
+				htmlGenres += results[i].genreName.value;
+				htmlGenres += ", ";
+				genres.push(results[i].genreName.value);
+			}
+		}
 		if(results[i].song && !titles.includes(results[i].song.value)) {
 			tableau += '<tr> \
 			<th scope="row">' + (+i + 1) + '</th> \
@@ -80,6 +91,7 @@ async function infoAlbum() {
 		}
 	}
 	$('#album-songs').html(tableau);
+	$('#album-genre').html(htmlGenres.substring(0,htmlGenres.length-2));
 	res = results[0];
 	$('#album-name').html(res.album.value);
 	$('#album-about').html(res.infos.value);
@@ -119,11 +131,14 @@ async function infoArtist() {
 	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name ?genre ?genreName \
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
+	console.log(results);
 	var tableau = "";
 	var titles = [];
 	var dateAlbum="";
 	var nbsong ="";
 	var index = 1;
+	var genres = [];
+	var htmlGenres = "";
 	for (var i in results) {
 		if( results[i].hasOwnProperty('dateAlbum'))
 		{
@@ -132,6 +147,14 @@ async function infoArtist() {
 		if(results[i].hasOwnProperty('nbSong'))
 		{
 			nbsong = results[i].nbSong.value;
+		}
+		if(results[i].hasOwnProperty('genreName'))
+		{
+			if(!genres.includes(results[i].genreName.value)){
+				htmlGenres += results[i].genreName.value;
+				htmlGenres += ", ";
+				genres.push(results[i].genreName.value);
+			}
 		}
 		if(results[i].hasOwnProperty('album') && results[i].hasOwnProperty('albumName') ){
 			if(!titles.includes(results[i].album.value)){
@@ -147,6 +170,7 @@ async function infoArtist() {
 		}
 	}
 	$('#artist-albums').html(tableau);
+	$('#artist-genre').html(htmlGenres.substring(0,htmlGenres.length-2));
 	res = results[0];
 	if( res.hasOwnProperty('name') )
 		$('#artist-name').html(res.name.value);
@@ -159,8 +183,6 @@ async function infoArtist() {
 		$('#artist-year-start').html(res.begin.value);
 	if( res.hasOwnProperty('info') )
 		$('#artist-about').html(res.info.value);
-	if( res.hasOwnProperty('genreName') )
-		$('#artist-genre').html(res.genreName.value);
 	if( res.hasOwnProperty('end') )
 		$('#artist-year-end').html(res.end.value);
 }
