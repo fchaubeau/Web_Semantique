@@ -41,7 +41,7 @@ async function infoSong() {
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
-	$('#song-year').html(res.year.value);
+	$('#song-year').html(res.year.value.substring(0,4));
 	$('#song-genre').html('<a href=genre.html?genre=' + res.genre.value + '>' + res.genreName.value + '</a>');
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
@@ -55,7 +55,7 @@ async function infoAlbum() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT DISTINCT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?genre ?songName ?genreName  \
+	SELECT DISTINCT ?thumbnail ?song ?songName ?album ?year ?infos ?artist ?artistName ?genre ?genreName  \
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbo:releaseDate ?year; \
@@ -64,9 +64,8 @@ async function infoAlbum() {
 	dbo:genre ?genre. \
 	?genre foaf:name ?genreName. \
 	OPTIONAL { ?artist foaf:name ?artistName. } \
-	OPTIONAL {  ?song dbo:album <' + name + '>; \
-				dbp:thisSingle ?songName. }\
-	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail. }.\
+	OPTIONAL { {<' + name + '> dbp:title ?song. ?song dbp:thisSingle ?songName } UNION {<' + name + '> dbp:title ?song.} } \
+	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail. }.\
 	FILTER(lang(?infos)="en"). \
 	}';
 	results = await requestDbpedia(query);
@@ -86,9 +85,16 @@ async function infoAlbum() {
 		}
 		if(results[i].song && !titles.includes(results[i].song.value)) {
 			tableau += '<tr> \
-			<th scope="row">' + (+i + 1) + '</th> \
-			<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
-	    	</tr>';
+			<th scope="row">' + (+i + 1) + '</th>';
+
+			if(results[i].songName){
+				tableau += '<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td>';
+			}else{
+				tableau += '<td>'+ results[i].song.value + '</td>';
+			}
+			
+	    	
+	    	tableau += '</tr>';
 	    	titles.push(results[i].song.value);
 		}
 	}
