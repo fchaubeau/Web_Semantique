@@ -42,7 +42,7 @@ async function infoSong() {
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
 	$('#song-year').html(res.year.value.substring(0,4));
-	$('#song-genre').html(res.genreName.value);
+	$('#song-genre').html('<a href=genre.html?genre=' + res.genre.value + '>' + res.genreName.value + '</a>');
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
@@ -50,6 +50,7 @@ async function infoSong() {
 async function infoAlbum() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('album');
+	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
@@ -77,7 +78,7 @@ async function infoAlbum() {
 		if(results[i].hasOwnProperty('genreName'))
 		{
 			if(!genres.includes(results[i].genreName.value)){
-				htmlGenres += results[i].genreName.value;
+				htmlGenres += '<a href=genre.html?genre=' + results[i].genre.value + '>' + results[i].genreName.value + '</a>';
 				htmlGenres += ", ";
 				genres.push(results[i].genreName.value);
 			}
@@ -158,7 +159,7 @@ async function infoArtist() {
 		if(results[i].hasOwnProperty('genreName'))
 		{
 			if(!genres.includes(results[i].genreName.value)){
-				htmlGenres += results[i].genreName.value;
+				htmlGenres += '<a href=genre.html?genre=' + results[i].genre.value + '>' + results[i].genreName.value + '</a>';
 				htmlGenres += ", ";
 				genres.push(results[i].genreName.value);
 			}
@@ -192,6 +193,33 @@ async function infoArtist() {
 		$('#artist-about').html(res.info.value);
 	if( res.hasOwnProperty('end') )
 		$('#artist-year-end').html(res.end.value);
+}
+
+async function infoGenre(){
+	const urlParams = new URLSearchParams(window.location.search);
+	const name = urlParams.get('genre');
+	console.log(name);
+	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp: <http://dbpedia.org/property/> \
+	PREFIX dbr: <http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?info ?thumbnail ?name \
+	WHERE{ \
+	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail.}. \
+	OPTIONAL { <' + name + '> dbo:abstract ?info. \
+	FILTER(lang(?info)="en") }. \
+	OPTIONAL { <' + name + '> foaf:name ?name.}. \
+	}';
+	results = await requestDbpedia(query);
+	console.log(results);
+	res = results[0];
+
+	if( res.hasOwnProperty('name') )
+		$('#genre-name').html(res.name.value);
+	if( res.hasOwnProperty('info') )
+		$('#genre-about').html(res.info.value);
+	if( res.hasOwnProperty('thumbnail') )
+		$('#genre-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
 
 
