@@ -282,7 +282,7 @@ async function searchArtist(value) {
 	SELECT ?artist ?artistName \
 	WHERE{ \
 	?artist foaf:name ?artistName. \
-	FILTER (regex(?artistName, "' + value + '", "i")) \
+	FILTER strStarts(lcase(?artistName), lcase("' + value + '")). \
 	?album dbo:artist ?artist. \
 	} GROUP BY ?artist ?artistName LIMIT 5';
 	results = await requestDbpedia(query);
@@ -303,7 +303,7 @@ async function searchAlbum(value) {
 	SELECT ?artist ?artistName ?album ?albumName \
 	WHERE{ \
 	?album  dbp:thisAlbum ?albumName. \
-	FILTER (regex(?albumName, "' + value + '", "i")) \
+	FILTER strStarts(lcase(str(?albumName)), lcase("' + value + '")). \
 	?album dbo:artist ?artist. \
 	?artist foaf:name ?artistName. \
 	} GROUP BY ?artist ?artistName ?album ?albumName LIMIT 5';
@@ -325,14 +325,15 @@ async function searchSong(value) {
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
 	SELECT ?song ?songName ?artist ?artistName ?album ?albumName \
 	WHERE{ \
-	?song  dbp:thisSingle ?songName. \
-	FILTER (regex(?songName, "' + value + '", "i")) \
-	OPTIONAL { \
+	?song  dbp:thisSingle ?Sn. \
+    BIND(REPLACE(?Sn, "\\"", "") AS ?songName) \
+	FILTER strStarts(lcase(str(?songName)), lcase("' + value + '")). \
+	 \
 				?song dbo:musicalArtist ?artist. \
 				?artist foaf:name ?artistName. \
-			} \
-	OPTIONAL {?song dbo:album ?album. \
-	?album dbp:thisAlbum ?albumName} \
+			 \
+	?song dbo:album ?album. \
+	?album dbp:thisAlbum ?albumName \
 	} GROUP BY ?song ?songName LIMIT 5';
 	results = await requestDbpedia(query);
 	var tableau = "";
@@ -348,5 +349,6 @@ async function searchSong(value) {
 
 async function searchQuery() {
 	v = $("#search").val(); 
-	await Promise.all([searchArtist(v), searchAlbum(v), searchSong(v)]);
+	if (v.length > 2)
+		await Promise.all([searchArtist(v), searchAlbum(v), searchSong(v)]);
 }
