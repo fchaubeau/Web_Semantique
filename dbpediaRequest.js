@@ -203,7 +203,9 @@ async function infoGenre(){
 	OPTIONAL { <' + name + '> dbo:abstract ?info. \
 	FILTER(lang(?info)="en") }. \
 	OPTIONAL { <' + name + '> foaf:name ?name.}. \
-	}';
+	OPTIONAL {?genre dbo:genre <' + name + '>.}. \
+	} \
+	LIMIT 100';
 	results = await requestDbpedia(query);
 	console.log(results);
 	res = results[0];
