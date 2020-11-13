@@ -182,7 +182,6 @@ async function infoArtist() {
 	res = results[0];
 	if( res.hasOwnProperty('name') )
 		$('#artist-name').html(res.name.value);
-	$('#artist')
 	if( res.hasOwnProperty('thumbnail') )
 		$('#artist-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 	if( res.hasOwnProperty('countryname') )
@@ -193,6 +192,9 @@ async function infoArtist() {
 		$('#artist-about').html(res.info.value);
 	if( res.hasOwnProperty('end') )
 		$('#artist-year-end').html(res.end.value);
+	if (res.name === undefined) {
+		$('#content').html("<img id=error src=https://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gifhttps://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gif />");
+	}
 }
 
 async function infoGenre(){
@@ -282,7 +284,7 @@ async function searchSong(value) {
 				?artist foaf:name ?artistName. \
 			 \
 	?song dbo:album ?album. \
-	?album dbp:thisAlbum ?albumName \
+	?album dbp:thisAlbum ?albumName. \
 	} GROUP BY ?song ?songName LIMIT 5';
 	results = await requestDbpedia(query);
 	var tableau = "";
@@ -298,6 +300,32 @@ async function searchSong(value) {
 
 async function searchQuery() {
 	v = $("#search").val(); 
-	if (v.length > 2)
+	if (v.length > 2) {
+		$('#queryIndication').html("<img src=https://mir-s3-cdn-cf.behance.net/project_modules/disp/04de2e31234507.564a1d23645bf.gif />");
 		await Promise.all([searchArtist(v), searchAlbum(v), searchSong(v)]);
+		if ($('#result-artist').css("display") == "none" && $('#result-album').css("display") == "none" && $('#result-song').css("display") == "none") {
+			$('#queryIndication').html("Aucun résultat pour '" + v + "'.");
+		}
+		else {
+			$('#queryIndication').html("Résultat pour '" + v + "' :");
+		}
+	}
+	else {
+		$('.table-result').each(function() {
+			$(this).css("display", "none");
+		});
+		$('#queryIndication').html("Tapez au moins 3 caractères pour lancer une recherche");
+	}
 }
+
+$('body').on('DOMSubtreeModified', '.search', function(){
+	source = "#" + $(this).attr('id');
+	target = "#result-" + source.split("-")[1];
+	console.log(source, target, $(source).html().length);
+	if ($(source).html().length == 0) {
+		$(target).css("display", "none");
+	}
+	else {
+		$(target).css("display", "flex");
+	}
+  });

@@ -18,31 +18,40 @@
 
 <body class="container-fluid bg">
     <!-- Search Box -->
-    
+
     <div class="input-group mb-3 searchbar">
-  <input type="text" id="search" class="form-control" placeholder="Rechercher un album, un artiste, un titre..."
+        <input type="text" id="search" class="form-control" placeholder="Rechercher un album, un artiste, un titre..."
             autofocus="autofocus" autocomplete="off" oninput="searchQuery()">
-  <div class="input-group-append">
-    <button class="btn btn-warning">
-          <img src="https://static.thenounproject.com/png/52666-200.png" class="img-fluid" width="40">
-        </button>
-  </div>
-</div>
+        <div class="input-group-append">
+            <button class="btn btn-warning">
+                <img src="https://static.thenounproject.com/png/52666-200.png" class="img-fluid" width="40">
+            </button>
+        </div>
+    </div>
     <!-- End of Search Box -->
 
     <!-- Content -->
-    <div class="row result">
-        <div class=col>
+    <div class="row justify-content-center">
+        <div class=col-6>
+            <h1 id=queryIndication>Tapez au moins 3 caractères pour lancer une recherche</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center table-result" id=result-artist>
+        <div class=col-6>
+            <h3>ARTIST</h3>
             <table class="table table-dark">
                 <thead>
                     <tr>
                         <th scope="col">Artist</th>
                     </tr>
                 </thead>
-                <tbody id=search-artist></tbody>
+                <tbody class=search id=search-artist></tbody>
             </table>
         </div>
-        <div class=col>
+    </div>
+    <div class="row justify-content-center table-result" id=result-album>
+        <div class=col-6>
+            <h3>ALBUM</h3>
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -50,10 +59,13 @@
                         <th scope=col>Artist</th>
                     </tr>
                 </thead>
-                <tbody id=search-album></tbody>
+                <tbody class=search id=search-album></tbody>
             </table>
         </div>
-        <div class=col>
+    </div>
+    <div class="row justify-content-center table-result" id=result-song>
+        <div class=col-6>
+            <h3>SONG</h3>
             <table class="table table-dark">
                 <thead>
                     <tr>
@@ -62,7 +74,7 @@
                         <th scope="col">Artist</th>
                     </tr>
                 </thead>
-                <tbody id=search-song></tbody>
+                <tbody class=search id=search-song></tbody>
             </table>
         </div>
     </div>
