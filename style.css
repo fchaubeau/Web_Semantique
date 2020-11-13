@@ -38,7 +38,7 @@ h3 {
 
 .retour{
     position: fixed;
-    left: 40px;
+    right: 40px;
     top : 50px;
     z-index: 10;
 }
