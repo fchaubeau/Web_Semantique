@@ -50,6 +50,7 @@ async function infoSong() {
 async function infoAlbum() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('album');
+	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
@@ -186,6 +187,25 @@ async function infoArtist() {
 		$('#artist-about').html(res.info.value);
 	if( res.hasOwnProperty('end') )
 		$('#artist-year-end').html(res.end.value);
+}
+
+async function infoGenre(){
+	const urlParams = new URLSearchParams(window.location.search);
+	const name = urlParams.get('artist');
+	console.log(name);
+	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	PREFIX dbp: <http://dbpedia.org/property/> \
+	PREFIX dbr: <http://dbpedia.org/resource/> \
+	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	SELECT ?info ?thumbnail ?name \
+	WHERE{ \
+	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail.}. \
+	OPTIONAL { <' + name + '> dbo:abstract ?info. \
+	FILTER(lang(?info)="en") }. \
+	OPTIONAL { <' + name + '> foaf:name ?name.}. \
+	}';
+	results = await requestDbpedia(query);
+	console.log(results);
 }
 
 
