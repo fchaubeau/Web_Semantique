@@ -126,8 +126,23 @@ async function infoAlbum() {
 	$('#album-about').html(res.infos.value);
 	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
 	$('#album-year').html(res.year.value.substring(0,4));
-	if (typeof res.thumbnail !== 'undefined')
-		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
+	//affichage de la thumbnail issue de lastfm
+	$.getJSON('http://ws.audioscrobbler.com/2.0/?method=artist.search&artist='+res.artistName.value+'&api_key=41ac210de863f40d580978eae0307a4c&format=json', function(data) {
+    // JSON result in `data` variable
+	console.log(data); // data contient tous les artistes dont le nom est semblable à res.artistName.value
+	var artistname = data.results.artistmatches.artist[0].name;//on prend le name de la premiere proposition
+	console.log(artistname);
+	//on fait la meme chose pour le nom de lalbum
+		$.getJSON('http://ws.audioscrobbler.com/2.0/?method=album.search&album='+res.album.value+'&api_key=41ac210de863f40d580978eae0307a4c&format=json', function(dataalbum) {
+			var albumname = dataalbum.results.albummatches.album[0].name;
+			console.log(albumname);
+			$.getJSON('http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=41ac210de863f40d580978eae0307a4c&artist='+artistname+'&album='+albumname+'&format=json', function(dataalbuminfo) {
+				console.log(dataalbuminfo);
+				console.log(dataalbuminfo.album.image[3]["#text"]);
+				$('#album-image').html('<img src="' + dataalbuminfo.album.image[3]["#text"] + '" class=img-fluid>');
+			});
+		});
+	});
 }
 
 async function infoArtist() {
