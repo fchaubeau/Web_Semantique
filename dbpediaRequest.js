@@ -70,6 +70,7 @@ async function infoAlbum() {
 	var titles = [];
 	var genres = [];
 	var htmlGenres = "";
+	var index = 1;
 	for (var i in results) {
 		if(results[i].hasOwnProperty('genreName'))
 		{
@@ -81,7 +82,7 @@ async function infoAlbum() {
 		}
 		if(results[i].song && !titles.includes(results[i].song.value)) {
 			tableau += '<tr> \
-			<th scope="row">' + (+i + 1) + '</th>';
+			<th scope="row">' + index + '</th>';
 
 			if(results[i].songName){
 				tableau += '<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td>';
@@ -114,6 +115,7 @@ async function infoAlbum() {
 			
 	    	
 	    	tableau += '</tr>';
+	    	index++;
 	    	titles.push(results[i].song.value);
 		}
 	}
