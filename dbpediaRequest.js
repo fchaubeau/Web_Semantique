@@ -16,32 +16,41 @@ async function requestDbpedia(query) {
 async function infoSong() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('song');
+	console.log('uri debug: ');
+	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
 	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre ?genreName  \
 	WHERE{ \
-	<' + name + '> dbo:abstract ?infos; \
-	dbp:thisSingle ?song; \
-	dbo:musicalArtist ?artist; \
-	dbo:recordLabel ?label; \
-	dbo:genre ?genre. \
-	?artist foaf:name ?artistName. \
-	?genre foaf:name ?genreName. \
-	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail} \
-	OPTIONAL {<' + name + '> dbp:released ?year} \
-	OPTIONAL {<' + name + '> dbo:releaseDate ?year} \
-	FILTER(lang(?infos)="en") \
+	OPTIONAL {<' + name + '> dbo:abstract ?infos.\
+	FILTER(lang(?infos)="en") }. \
+	OPTIONAL {<' + name + '>dbp:thisSingle ?song.}. \
+	OPTIONAL {<' + name + '>dbo:musicalArtist ?artist.}. \
+	OPTIONAL {<' + name + '>dbo:recordLabel ?label.}. \
+	OPTIONAL {<' + name + '> dbo:genre ?genre.}. \
+	OPTIONAL {?artist foaf:name ?artistName.}. \
+	OPTIONAL {?genre foaf:name ?genreName.}. \
+	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail.}. \
+	OPTIONAL {<' + name + '> dbp:released ?year.}. \
+	OPTIONAL {<' + name + '> dbo:releaseDate ?year.}. \
 	}';
 	results = await requestDbpedia(query);
 	res = results[0];
-	$('#song-name').html(res.song.value);
-	$('#song-about').html(res.infos.value);
-	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
-	$('#song-year').html(res.year.value.substring(0,4));
-	$('#song-genre').html('<a href=genre.html?genre=' + res.genre.value + '>' + res.genreName.value + '</a>');
-	if (typeof res.thumbnail !== 'undefined')
+	console.log('res : ');
+	console.log(res);
+	if( res.hasOwnProperty('song') )
+		$('#song-name').html(res.song.value);
+	if( res.hasOwnProperty('infos') )
+		$('#song-about').html(res.infos.value);
+	if( res.hasOwnProperty('artist') &&  res.hasOwnProperty('artistName')  )
+		$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
+	if( res.hasOwnProperty('year') )
+		$('#song-year').html(res.year.value.substring(0,4));
+	if( res.hasOwnProperty('genre') && res.hasOwnProperty('genreName')  )
+		$('#song-genre').html('<a href=genre.html?genre=' + res.genre.value + '>' + res.genreName.value + '</a>');
+	if( res.hasOwnProperty('thumbnail') )
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
 
