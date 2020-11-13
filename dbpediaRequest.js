@@ -42,7 +42,7 @@ async function infoSong() {
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
 	$('#song-year').html(res.year.value);
-	$('#song-genre').html(res.genreName.value);
+	$('#song-genre').html('<a href=genre.html?genre=' + res.genre.value + '>' + res.genreName.value + '</a>');
 	if (typeof res.thumbnail !== 'undefined')
 		$('#album-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
@@ -79,7 +79,7 @@ async function infoAlbum() {
 		if(results[i].hasOwnProperty('genreName'))
 		{
 			if(!genres.includes(results[i].genreName.value)){
-				htmlGenres += results[i].genreName.value;
+				htmlGenres += '<a href=genre.html?genre=' + results[i].genre.value + '>' + results[i].genreName.value + '</a>';
 				htmlGenres += ", ";
 				genres.push(results[i].genreName.value);
 			}
@@ -153,7 +153,7 @@ async function infoArtist() {
 		if(results[i].hasOwnProperty('genreName'))
 		{
 			if(!genres.includes(results[i].genreName.value)){
-				htmlGenres += results[i].genreName.value;
+				htmlGenres += '<a href=genre.html?genre=' + results[i].genre.value + '>' + results[i].genreName.value + '</a>';
 				htmlGenres += ", ";
 				genres.push(results[i].genreName.value);
 			}
