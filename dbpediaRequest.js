@@ -191,7 +191,7 @@ async function infoArtist() {
 
 async function infoGenre(){
 	const urlParams = new URLSearchParams(window.location.search);
-	const name = urlParams.get('artist');
+	const name = urlParams.get('genre');
 	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
@@ -206,6 +206,12 @@ async function infoGenre(){
 	}';
 	results = await requestDbpedia(query);
 	console.log(results);
+	res = results[0];
+
+	if( res.hasOwnProperty('name') )
+		$('#genre-name').html(res.name.value);
+	if( res.hasOwnProperty('info') )
+		$('#genre-about').html(res.info.value);
 }
 
 
