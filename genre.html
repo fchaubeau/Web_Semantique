@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+    integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+
+  <!-- Style CSS -->
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <title>ZikoSearch</title>
+</head>
+
+<body class="container-fluid bg" onload="infoSong()">
+  <!-- Nouvelle recherche -->
+    
+ <a href="index.html" class="btn btn-warning btn-lg retour">Nouvelle recherche</a>
+
+  <!-- End of Nouvelle recherche -->
+
+  <!-- Content -->
+  <div class="row" style ="position:relative; top: 50px">
+
+    <div class="col align-self-center">
+      <h3>GENRE</h3>
+      <h1 id=song-name></h1>
+      <h2><span id=song-artist></span> - <span id=song-year></span></h2>
+    </div>
+  </div>
+    <div class="row" style ="position:relative; top: 50px">
+         <div class=col>
+      <h2>RÉFÉRENCES</h2>
+      <table class="table table-dark">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
+        <tbody id=album-songs></tbody>
+      </table>
+    </div>
+<div class=col style="background-color: antiquewhite;opacity: 0.5">
+      <h2 class="titre">Story</h2>
+      <div id=song-about class="story"></div>
+  </div>
+        </div>
+  <!-- End of Content -->
+  <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="dbpediaRequest.js"></script>
+
+  <!-- Optional JavaScript -->
+</body>
+
+</html>
