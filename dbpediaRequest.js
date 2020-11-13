@@ -212,6 +212,8 @@ async function infoGenre(){
 		$('#genre-name').html(res.name.value);
 	if( res.hasOwnProperty('info') )
 		$('#genre-about').html(res.info.value);
+	if( res.hasOwnProperty('thumbnail') )
+		$('#genre-image').html('<img src="' + res.thumbnail.value + '" class=img-fluid>');
 }
 
 
