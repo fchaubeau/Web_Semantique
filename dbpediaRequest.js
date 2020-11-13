@@ -64,7 +64,7 @@ async function infoAlbum() {
 	dbo:genre ?genre. \
 	?genre foaf:name ?genreName. \
 	OPTIONAL { ?artist foaf:name ?artistName. } \
-	OPTIONAL { {<' + name + '> dbp:title ?song. ?song dbp:thisSingle ?songName } UNION {<' + name + '> dbp:title ?song.} } \
+	OPTIONAL { {<' + name + '> dbp:title ?song. ?song foaf:name ?songName } UNION {<' + name + '> dbp:title ?song.} } \
 	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail. }.\
 	FILTER(lang(?infos)="en"). \
 	}';
@@ -90,7 +90,30 @@ async function infoAlbum() {
 			if(results[i].songName){
 				tableau += '<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td>';
 			}else{
-				tableau += '<td>'+ results[i].song.value + '</td>';
+				if(results[i].song.value.substring(0,4)=="http"){
+					console.log("ENTRER DANS REQ 2");
+					let query2 = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+					     		  PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+					     		  PREFIX dbp:	<http://dbpedia.org/property/> \
+								  SELECT ?name	\
+								  WHERE {\
+								  	{<' + results[i].song.value + '> dbo:wikiPageRedirects ?redirects.\
+  									?redirects foaf:name ?name.\
+  								    }\
+								  }	ORDER BY DESC(?name)\
+								  ';
+					results2 = await requestDbpedia(query2);
+					var nameSong = "n/a"
+					if(results2[0]){
+						nameSong = results2[0].name.value;
+						tableau += '<td><a href="song.html?song=' + results[i].song.value + '">' + nameSong + '</a></td>';
+					}else{
+						tableau += '<td>erreur de referencement dans dbpedia</td>';
+					}
+					
+				}else{
+					tableau += '<td>'+ results[i].song.value + '</td>';
+				}
 			}
 			
 	    	
