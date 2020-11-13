@@ -1,7 +1,6 @@
 async function requestDbpedia(query) {
 	let url = "http://dbpedia.org/sparql";
 	let queryURL = encodeURI(url + "?query=" + query + "&format=json");
-	//console.log(query);
 	try {
 		result = await $.ajax({
 			dataType: "jsonp",
@@ -36,7 +35,6 @@ async function infoSong() {
 	FILTER(lang(?infos)="en") \
 	}';
 	results = await requestDbpedia(query);
-	console.log(results);
 	res = results[0];
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
@@ -50,7 +48,6 @@ async function infoSong() {
 async function infoAlbum() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('album');
-	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
@@ -69,7 +66,6 @@ async function infoAlbum() {
 	FILTER(lang(?infos)="en"). \
 	}';
 	results = await requestDbpedia(query);
-	console.log(results);
 	var tableau = "";
 	var titles = [];
 	var genres = [];
@@ -112,7 +108,6 @@ async function infoAlbum() {
 async function infoArtist() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('artist');
-	console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
@@ -139,7 +134,6 @@ async function infoArtist() {
 	GROUP BY ?album ?info ?albumName ?end ?countryname ?begin ?thumbnail ?dateAlbum ?name ?genre ?genreName \
 	ORDER BY DESC(?dateAlbum)';
 	results = await requestDbpedia(query);
-	console.log(results);
 	var tableau = "";
 	var titles = [];
 	var dateAlbum="";
@@ -198,7 +192,6 @@ async function infoArtist() {
 async function infoGenre(){
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('genre');
-	//console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
@@ -232,9 +225,7 @@ async function infoGenre(){
 	        	OPTIONAL { <' + results[i].reference.value + '> foaf:name ?name.}. \
 	        	OPTIONAL { <' + results[i].reference.value + '> dbp:thisSingle ?name.}. \
 	        }';
-	        //console.log(query2);
-	        results2 = await requestDbpedia(query2);
-	        console.log(results2);
+	        var results2 = await requestDbpedia(query2);
 	        if(typeof(results2) !== 'undefined' && results2 !== 'undefined'){
 	        	for(var j in results2){
 	        		if(results2[j].type.value === "http://xmlns.com/foaf/0.1/Person" || results2[j].type.value === "http://dbpedia.org/ontology/Band"){
@@ -251,7 +242,7 @@ async function infoGenre(){
 	        		}
 	        		else if(results2[j].type.value === "http://dbpedia.org/ontology/Single"){
 	        			tableau += '<tr> \
-						<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
+						<td><a href="song.html?song=' + results2[j].link.value + '">' + results2[j].name.value + '</a></td> \
 						</tr>';
 	  					break;
 	        		}
@@ -259,7 +250,6 @@ async function infoGenre(){
 	        }
 		}
 	}
-	console.log(tableau);
 	if(tableau.length !== 0){
 		$('#genre-references').html(tableau);
 	}
