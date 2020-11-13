@@ -1,7 +1,7 @@
 async function requestDbpedia(query) {
 	let url = "http://dbpedia.org/sparql";
 	let queryURL = encodeURI(url + "?query=" + query + "&format=json");
-	console.log(query);
+	//console.log(query);
 	try {
 		result = await $.ajax({
 			dataType: "jsonp",
@@ -198,22 +198,71 @@ async function infoArtist() {
 async function infoGenre(){
 	const urlParams = new URLSearchParams(window.location.search);
 	const name = urlParams.get('genre');
-	console.log(name);
+	//console.log(name);
 	let query = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?info ?thumbnail ?name \
+	SELECT ?info ?thumbnail ?name ?reference \
 	WHERE{ \
 	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail.}. \
 	OPTIONAL { <' + name + '> dbo:abstract ?info. \
 	FILTER(lang(?info)="en") }. \
 	OPTIONAL { <' + name + '> foaf:name ?name.}. \
-	OPTIONAL {?genre dbo:genre <' + name + '>.}. \
+	OPTIONAL {?reference dbo:genre <' + name + '>.}. \
 	} \
-	LIMIT 100';
+	LIMIT 20';
 	results = await requestDbpedia(query);
-	console.log(results);
+	
+
+	var tableau = "";
+	for(var i in results){
+		if(results[i].hasOwnProperty('reference'))
+		{
+			let query2 = 'PREFIX dbo: <http://dbpedia.org/ontology/> \
+	        PREFIX dbp: <http://dbpedia.org/property/> \
+	        PREFIX dbr: <http://dbpedia.org/resource/> \
+	        PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
+	        SELECT ?name, ?type, ?link \
+	        WHERE{ \
+	        	BIND ("' + results[i].reference.value + '" AS ?link) \
+	        	OPTIONAL { <' + results[i].reference.value + '> rdf:type ?type.}. \
+	        	OPTIONAL { <' + results[i].reference.value + '> dbp:type ?type.}. \
+	        	OPTIONAL { <' + results[i].reference.value + '> dbp:thisAlbum ?name.}. \
+	        	OPTIONAL { <' + results[i].reference.value + '> foaf:name ?name.}. \
+	        	OPTIONAL { <' + results[i].reference.value + '> dbp:thisSingle ?name.}. \
+	        }';
+	        //console.log(query2);
+	        results2 = await requestDbpedia(query2);
+	        console.log(results2);
+	        if(typeof(results2) !== 'undefined' && results2 !== 'undefined'){
+	        	for(var j in results2){
+	        		if(results2[j].type.value === "http://xmlns.com/foaf/0.1/Person" || results2[j].type.value === "http://dbpedia.org/ontology/Band"){
+	        			tableau += '<tr> \
+						<td><a href="artist.html?artist=' + results2[j].link.value + '">' + results2[j].name.value + '</a></td> \
+	  					</tr>';
+	  					break;
+	        		}
+	        		else if(results2[j].type.value === "http://dbpedia.org/ontology/Album"){
+	        			tableau += '<tr> \
+						<td><a href="album.html?album=' + results2[j].link.value + '">' + results2[j].name.value + '</a></td> \
+	  					</tr>';
+	  					break;
+	        		}
+	        		else if(results2[j].type.value === "http://dbpedia.org/ontology/Single"){
+	        			tableau += '<tr> \
+						<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
+						</tr>';
+	  					break;
+	        		}
+	        	}
+	        }
+		}
+	}
+	console.log(tableau);
+	if(tableau.length !== 0){
+		$('#genre-references').html(tableau);
+	}
 	res = results[0];
 
 	if( res.hasOwnProperty('name') )
@@ -241,7 +290,7 @@ async function searchArtist(value) {
 	for (var i in results) {
 		tableau += '<tr> \
 		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
-	  </tr>'
+	  </tr>';
 	}
 	$('#search-artist').html(tableau);
 }
@@ -264,7 +313,7 @@ async function searchAlbum(value) {
 		tableau += '<tr> \
 		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
 		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
-	  </tr>'
+	  </tr>';
 	}
 	$('#search-album').html(tableau);
 }
@@ -292,7 +341,7 @@ async function searchSong(value) {
 		<td><a href="song.html?song=' + results[i].song.value + '">' + results[i].songName.value + '</a></td> \
 		<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
 		<td><a href="artist.html?artist=' + results[i].artist.value + '">' + results[i].artistName.value + '</a></td> \
-	  </tr>'
+	  </tr>';
 	}
 	$('#search-song').html(tableau);
 }
