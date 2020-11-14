@@ -22,16 +22,18 @@ async function infoSong() {
 	PREFIX dbp:	<http://dbpedia.org/property/> \
 	PREFIX dbr:	<http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre ?genreName  \
+	SELECT ?thumbnail ?song ?album ?year ?infos ?artist ?artistName ?label ?genre ?genreName ?artist2 ?artistName2 \
 	WHERE{ \
 	OPTIONAL {<' + name + '> dbo:abstract ?infos.\
 	FILTER(lang(?infos)="en") }. \
-	OPTIONAL {<' + name + '>dbp:thisSingle ?song.}. \
-	OPTIONAL {<' + name + '>dbo:musicalArtist ?artist.}. \
-	OPTIONAL {<' + name + '>dbo:recordLabel ?label.}. \
-	OPTIONAL {<' + name + '> dbo:genre ?genre.}. \
-	OPTIONAL {?artist foaf:name ?artistName.}. \
-	OPTIONAL {?genre foaf:name ?genreName.}. \
+	OPTIONAL {<' + name + '> dbp:thisSingle ?song.}. \
+	OPTIONAL {<' + name + '> dbo:musicalArtist ?artist.\
+              ?artist foaf:name ?artistName.}. \
+	OPTIONAL {<' + name + '> dbo:artist ?artist2.\
+	          ?artist2 foaf:name ?artistName2.}. \
+	OPTIONAL {<' + name + '> dbo:recordLabel ?label.}. \
+	OPTIONAL {<' + name + '> dbo:genre ?genre.\
+              ?genre foaf:name ?genreName.}. \
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail.}. \
 	OPTIONAL {<' + name + '> dbp:released ?year.}. \
 	OPTIONAL {<' + name + '> dbo:releaseDate ?year.}. \
@@ -44,8 +46,12 @@ async function infoSong() {
 		$('#song-name').html(res.song.value);
 	if( res.hasOwnProperty('infos') )
 		$('#song-about').html(res.infos.value);
-	if( res.hasOwnProperty('artist') &&  res.hasOwnProperty('artistName')  )
+	if( res.hasOwnProperty('artist') &&  res.hasOwnProperty('artistName')  ){
 		$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
+	}else{
+		if( res.hasOwnProperty('artist2') &&  res.hasOwnProperty('artistName2')  )
+			$('#song-artist').html('<a href=artist.html?artist=' + res.artist2.value + '> ' + res.artistName2.value + '</a>');
+	}
 	if( res.hasOwnProperty('year') )
 		$('#song-year').html(res.year.value.substring(0,4));
 	if( res.hasOwnProperty('genre') && res.hasOwnProperty('genreName')  )
@@ -65,11 +71,11 @@ async function infoAlbum() {
 	WHERE{ \
 	<' + name + '> dbo:abstract ?infos; \
 	dbo:releaseDate ?year; \
-	dbp:thisAlbum ?album; \
-	dbo:artist ?artist; \
-	dbo:genre ?genre. \
-	?genre foaf:name ?genreName. \
-	OPTIONAL { ?artist foaf:name ?artistName. } \
+	dbp:thisAlbum ?album. \
+	OPTIONAL { <' + name + '> dbo:genre ?genre. \
+	           ?genre foaf:name ?genreName. } \
+	OPTIONAL { <' + name + '> dbo:artist ?artist.\
+		       ?artist foaf:name ?artistName. } \
 	OPTIONAL { {<' + name + '> dbp:title ?song. ?song foaf:name ?songName } UNION {<' + name + '> dbp:title ?song.} } \
 	OPTIONAL { <' + name + '> dbo:thumbnail ?thumbnail. }.\
 	FILTER(lang(?infos)="en"). \
@@ -80,7 +86,10 @@ async function infoAlbum() {
 	var genres = [];
 	var htmlGenres = "";
 	var index = 1;
+	var res;
 	for (var i in results) {
+		if(index == 1)
+			res = results[i];
 		if(results[i].hasOwnProperty('genreName'))
 		{
 			if(!genres.includes(results[i].genreName.value)){
@@ -130,7 +139,7 @@ async function infoAlbum() {
 	}
 	$('#album-songs').html(tableau);
 	$('#album-genre').html(htmlGenres.substring(0,htmlGenres.length-2));
-	res = results[0];
+	console.log(res);
 	$('#album-name').html(res.album.value);
 	$('#album-about').html(res.infos.value);
 	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
@@ -161,7 +170,7 @@ async function infoArtist() {
 	PREFIX dbp: <http://dbpedia.org/property/> \
 	PREFIX dbr: <http://dbpedia.org/resource/> \
 	PREFIX foaf: <http://xmlns.com/foaf/0.1/> \
-	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  COUNT(*) AS ?nbSong ?genre ?genreName \
+	SELECT ?album ?info ?thumbnail ?name ?begin ?end ?countryname ?dateAlbum ?albumName  ?genre ?genreName \
 	WHERE{ \
 	OPTIONAL {<' + name + '> dbo:thumbnail ?thumbnail.}. \
 	OPTIONAL {<' + name + '> dbo:abstract ?info. \
@@ -174,8 +183,7 @@ async function infoArtist() {
 	FILTER(lang(?countryname)="en")}. \
 	OPTIONAL {?album dbo:artist <' + name + '>; \
 	dbp:thisAlbum ?albumName; \
-	dbo:releaseDate ?dateAlbum. \
-	?x dbo:album ?album. }.\
+	dbo:releaseDate ?dateAlbum. }.\
 	OPTIONAL { <' + name + '> dbo:activeYearsEndYear  ?end}. \
 	OPTIONAL { <' + name + '> dbo:genre ?genre. \
 	?genre foaf:name ?genreName.} \
@@ -212,8 +220,7 @@ async function infoArtist() {
 				tableau += '<tr> \
 				<th scope="row">' + index + '</th> \
 				<td><a href="album.html?album=' + results[i].album.value + '">' + results[i].albumName.value + '</a></td> \
-				<td>' +  dateAlbum+ '</td> \
-				<td>' +  nbsong+ '</td> \
+				<td>' +  dateAlbum+ '</td>  \
 				</tr>';
 				titles.push(results[i].album.value);
 				index++;
