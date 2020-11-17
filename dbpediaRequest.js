@@ -36,6 +36,11 @@ async function infoSong() {
 	}';
 	results = await requestDbpedia(query);
 	res = results[0];
+	console.log(res);
+	if (res === undefined) {
+		$('#content').html("<img id=error src=https://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gifhttps://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gif />");
+		return;
+	}
 	$('#song-name').html(res.song.value);
 	$('#song-about').html(res.infos.value);
 	$('#song-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
@@ -122,6 +127,10 @@ async function infoAlbum() {
 	$('#album-songs').html(tableau);
 	$('#album-genre').html(htmlGenres.substring(0,htmlGenres.length-2));
 	res = results[0];
+	if (results.length == 0) {
+		$('#content').html("<img id=error src=https://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gifhttps://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gif />");
+		return;
+	}
 	$('#album-name').html(res.album.value);
 	$('#album-about').html(res.infos.value);
 	$('#album-artist').html('<a href=artist.html?artist=' + res.artist.value + '> ' + res.artistName.value + '</a>');
@@ -296,7 +305,11 @@ async function infoGenre(){
 		$('#genre-references').html(tableau);
 	}
 	res = results[0];
-
+	console.log(res);
+	if (!res.hasOwnProperty('type')) {
+		$('#content').html("<img id=error src=https://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gifhttps://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gif />");
+		return;
+	}
 	if( res.hasOwnProperty('name') )
 		$('#genre-name').html(res.name.value);
 	if( res.hasOwnProperty('info') )
