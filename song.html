@@ -18,31 +18,34 @@
 
 <body class="container-fluid bg" onload="infoSong()">
   <!-- Nouvelle recherche -->
-    
- <a href="index.html" class="btn btn-warning btn-lg retour">Nouvelle recherche</a>
+
+  <a href="index.html" class="btn btn-warning btn-lg retour">Nouvelle recherche</a>
 
   <!-- End of Nouvelle recherche -->
 
   <!-- Content -->
-  <div class="row" style ="position:relative; top: 50px">
-    <div class=col-3>
-      <div id=song-image>
-        <img src=https://img.icons8.com/ios/452/music.png class=img-fluid style="filter:invert(1);max-width: 300px;" />
+  <div id=content>
+    <div class="row" style="position:relative; top: 50px">
+      <div class=col-3>
+        <div id=song-image>
+          <img src=https://img.icons8.com/ios/452/music.png class=img-fluid
+            style="filter:invert(1);max-width: 300px;" />
+        </div>
+      </div>
+      <div class="col align-self-center">
+        <h3>SONG</h3>
+        <h1 id=song-name></h1>
+        <h2><span id=song-artist></span> - <span id=song-year></span></h2>
+        <h2><span id=song-genre></span></h2>
       </div>
     </div>
-    <div class="col align-self-center">
-      <h3>SONG</h3>
-      <h1 id=song-name></h1>
-      <h2><span id=song-artist></span> - <span id=song-year></span></h2>
-      <h2><span id=song-genre></span></h2>
+    <div class="row" style="position:relative; top: 50px">
+      <div class=col style="background-color: antiquewhite;opacity: 0.5">
+        <h2 class="titre">Story</h2>
+        <div id=song-about class="story"></div>
+      </div>
     </div>
   </div>
-    <div class="row" style ="position:relative; top: 50px">
-<div class=col style="background-color: antiquewhite;opacity: 0.5">
-      <h2 class="titre">Story</h2>
-      <div id=song-about class="story"></div>
-  </div>
-        </div>
   <!-- End of Content -->
   <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script type="text/javascript" src="dbpediaRequest.js"></script>
