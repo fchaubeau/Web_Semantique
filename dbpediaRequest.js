@@ -306,10 +306,10 @@ async function infoGenre(){
 	}
 	res = results[0];
 	console.log(res);
-	if (!res.hasOwnProperty('type')) {
+	/*if (!res.hasOwnProperty('type')) {
 		$('#content').html("<img id=error src=https://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gifhttps://media4.giphy.com/media/JQMlfqZfEIaQDopMBQ/giphy.gif />");
 		return;
-	}
+	}*/
 	if( res.hasOwnProperty('name') )
 		$('#genre-name').html(res.name.value);
 	if( res.hasOwnProperty('info') )
